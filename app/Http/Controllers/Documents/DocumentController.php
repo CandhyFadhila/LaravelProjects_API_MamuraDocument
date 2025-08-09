@@ -10,6 +10,7 @@ use App\Http\Resources\Templates\WithoutDataResource;
 use App\Models\Document;
 use Illuminate\Support\Str;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
@@ -48,7 +49,6 @@ class DocumentController extends Controller
             $uploadedFiles = [];
 
             foreach ($request->file('files') as $file) {
-                // Ini untuk local aja
                 $filename = Str::random(25);
                 $mimeType = $file->getClientMimeType();
                 $size = $this->getFileSize($file);
@@ -58,7 +58,7 @@ class DocumentController extends Controller
 
                 $document = Document::create([
                     'id' => $fileId,
-                    'user_id' => auth()->id(),
+                    'user_id' => Auth::user()->id,
                     'filename' => $filename,
                     'path' => "file/{$filename}",
                     'mime_type' => $mimeType,
@@ -67,12 +67,12 @@ class DocumentController extends Controller
 
                 // Simpan hasil upload ke array
                 $uploadedFiles[] = [
-                    'file_id' => $document->id,
-                    'path' => $document->path,
-                    'filename' => $document->filename,
-                    'url' => url("storage/file/{$filename}"),
-                    'mime_type' => $document->mime_type,
-                    'size' => $this->formatFileSize($document->size),
+                    'server_file_id' => $document->id,
+                    'server_file_path' => $document->path,
+                    'server_file_name' => $document->filename,
+                    'server_file_url' => url("storage/file/{$filename}"),
+                    'server_file_mime_type' => $document->mime_type,
+                    'server_file_size' => $this->formatFileSize($document->size),
                 ];
             }
 
@@ -118,7 +118,7 @@ class DocumentController extends Controller
             return response()->json(new WithDataResource(
                 Response::HTTP_OK,
                 'Dokumen Berhasil Dihapus',
-                'Dokumen berhasil dihapus.',
+                'Dokumen yang dipilih berhasil dihapus.',
                 $deleted
             ), Response::HTTP_OK);
         } catch (\Exception $e) {
