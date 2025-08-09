@@ -68,6 +68,7 @@ class DocumentController extends Controller
                 // Simpan hasil upload ke array
                 $uploadedFiles[] = [
                     'file_id' => $document->id,
+                    'path' => $document->path,
                     'filename' => $document->filename,
                     'url' => url("storage/file/{$filename}"),
                     'mime_type' => $document->mime_type,
