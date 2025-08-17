@@ -109,6 +109,7 @@ class DocumentController extends Controller
                         unlink($filePath);
                         $document->delete();
                         $deleted[] = $fileId;
+                        Log::success("Dokumen berhasil dihapus: {$fileId}");
                     } else {
                         Log::warning("Dokumen tidak ditemukan atau tidak ada di storage: {$fileId}");
                     }
