@@ -54,8 +54,7 @@ class DocumentController extends Controller
                 $size = $this->getFileSize($file);
                 $fileId = (string) Str::uuid();
 
-                // $file->move('storage/file', $filename);
-                $file->move('/file', $filename);
+                $file->move('storage/file', $filename);
                 // Storage::disk('public')->putFileAs('file', $file, $filename);
 
                 $document = Document::create([
