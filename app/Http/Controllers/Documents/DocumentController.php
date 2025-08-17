@@ -65,6 +65,8 @@ class DocumentController extends Controller
                     'size' => $size,
                 ]);
 
+                Log::info("Dokumen berhasil diunggah pada path: {$document->path}");
+
                 // Simpan hasil upload ke array
                 $uploadedFiles[] = [
                     'server_file_id' => $document->id,
