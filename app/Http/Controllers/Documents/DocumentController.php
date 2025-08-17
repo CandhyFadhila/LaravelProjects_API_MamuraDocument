@@ -52,13 +52,14 @@ class DocumentController extends Controller
                 $filename = Str::random(25);
                 $mimeType = $file->getClientMimeType();
                 $size = $this->getFileSize($file);
-                $fileId = Str::uuid()->toString();
+                $fileId = (string) Str::uuid();
 
-                $file->move('storage/file', $filename);
+                // $file->move('storage/file', $filename);
+                Storage::disk('public')->putFileAs('file', $file, $filename);
 
                 $document = Document::create([
                     'id' => $fileId,
-                    'user_id' => Auth::user()->id,
+                    'user_id' => Auth::id(),
                     'filename' => $filename,
                     'path' => "file/{$filename}",
                     'mime_type' => $mimeType,
@@ -72,7 +73,8 @@ class DocumentController extends Controller
                     'server_file_id' => $document->id,
                     'server_file_path' => $document->path,
                     'server_file_name' => $document->filename,
-                    'server_file_url' => url("storage/file/{$filename}"),
+                    // 'server_file_url' => url("storage/file/{$filename}"),
+                    'server_file_url'       => asset("storage/{$document->path}"),
                     'server_file_mime_type' => $document->mime_type,
                     'server_file_size' => $this->formatFileSize($document->size),
                 ];
@@ -102,20 +104,37 @@ class DocumentController extends Controller
             $deleted = [];
 
             foreach ($request->file_id as $fileId) {
-                $document = Document::where('id', $fileId)->first();
+                $document = Document::find($fileId);
 
-                if ($document) {
-                    $filePath = public_path("storage/{$document->path}");
-                    Log::info("Dokumen yang akan dihapus terletak di: {$filePath}");
+                $relativePath = $document->path;
+                Log::info("Akan hapus dari disk 'public': {$relativePath}");
 
-                    if (file_exists($filePath)) {
-                        unlink($filePath);
+                // if ($document) {
+                //     $filePath = public_path("storage/{$document->path}");
+                //     Log::info("Dokumen yang akan dihapus terletak di: {$filePath}");
+
+                //     if (file_exists($filePath)) {
+                //         unlink($filePath);
+                //         $document->delete();
+                //         $deleted[] = $fileId;
+                //         Log::success("Dokumen berhasil dihapus: {$fileId}");
+                //     } else {
+                //         Log::warning("Dokumen tidak ditemukan atau tidak ada di storage: {$fileId}");
+                //     }
+                // }
+
+                if (Storage::disk('public')->exists($relativePath)) {
+                    $ok = Storage::disk('public')->delete($relativePath);
+                    if ($ok) {
                         $document->delete();
                         $deleted[] = $fileId;
-                        Log::success("Dokumen berhasil dihapus: {$fileId}");
+                        Log::info("Dokumen berhasil dihapus: {$fileId}");
                     } else {
-                        Log::warning("Dokumen tidak ditemukan atau tidak ada di storage: {$fileId}");
+                        Log::warning("Gagal menghapus file di storage untuk ID: {$fileId}");
                     }
+                } else {
+                    Log::warning("File tidak ditemukan di storage untuk ID: {$fileId} (path: {$relativePath})");
+                    $document->delete();
                 }
             }
 
