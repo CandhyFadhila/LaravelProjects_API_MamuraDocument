@@ -55,7 +55,6 @@ class DocumentController extends Controller
                 $fileId = (string) Str::uuid();
 
                 $file->move('storage/file', $filename);
-                // Storage::disk('public')->putFileAs('file', $file, $filename);
 
                 $document = Document::create([
                     'id' => $fileId,
