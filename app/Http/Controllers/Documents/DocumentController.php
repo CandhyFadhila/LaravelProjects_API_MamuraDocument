@@ -105,9 +105,6 @@ class DocumentController extends Controller
             foreach ($request->file_id as $fileId) {
                 $document = Document::find($fileId);
 
-                $relativePath = $document->path;
-                Log::info("Akan hapus dari disk 'public': {$relativePath}");
-
                 if ($document) {
                     $filePath = public_path("storage/{$document->path}");
                     Log::info("Dokumen yang akan dihapus terletak di: {$filePath}");
