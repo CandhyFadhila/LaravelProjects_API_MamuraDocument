@@ -104,6 +104,7 @@ class DocumentController extends Controller
 
                 if ($document) {
                     $filePath = public_path("storage/{$document->path}");
+                    Log::info("Dokumen yang akan dihapus terletak di: {$filePath}");
 
                     if (file_exists($filePath)) {
                         unlink($filePath);
