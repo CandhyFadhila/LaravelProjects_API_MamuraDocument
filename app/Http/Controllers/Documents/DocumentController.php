@@ -108,32 +108,18 @@ class DocumentController extends Controller
                 $relativePath = $document->path;
                 Log::info("Akan hapus dari disk 'public': {$relativePath}");
 
-                // if ($document) {
-                //     $filePath = public_path("storage/{$document->path}");
-                //     Log::info("Dokumen yang akan dihapus terletak di: {$filePath}");
+                if ($document) {
+                    $filePath = public_path("storage/{$document->path}");
+                    Log::info("Dokumen yang akan dihapus terletak di: {$filePath}");
 
-                //     if (file_exists($filePath)) {
-                //         unlink($filePath);
-                //         $document->delete();
-                //         $deleted[] = $fileId;
-                //         Log::success("Dokumen berhasil dihapus: {$fileId}");
-                //     } else {
-                //         Log::warning("Dokumen tidak ditemukan atau tidak ada di storage: {$fileId}");
-                //     }
-                // }
-
-                if (Storage::disk('public')->exists($relativePath)) {
-                    $ok = Storage::disk('public')->delete($relativePath);
-                    if ($ok) {
+                    if (file_exists($filePath)) {
+                        unlink($filePath);
                         $document->delete();
                         $deleted[] = $fileId;
-                        Log::info("Dokumen berhasil dihapus: {$fileId}");
+                        Log::success("Dokumen berhasil dihapus: {$fileId}");
                     } else {
-                        Log::warning("Gagal menghapus file di storage untuk ID: {$fileId}");
+                        Log::warning("Dokumen tidak ditemukan atau tidak ada di storage: {$fileId}");
                     }
-                } else {
-                    Log::warning("File tidak ditemukan di storage untuk ID: {$fileId} (path: {$relativePath})");
-                    $document->delete();
                 }
             }
 
