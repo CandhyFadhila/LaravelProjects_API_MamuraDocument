@@ -55,7 +55,8 @@ class DocumentController extends Controller
                 $fileId = (string) Str::uuid();
 
                 // $file->move('storage/file', $filename);
-                Storage::disk('public')->putFileAs('file', $file, $filename);
+                $file->move('/file', $filename);
+                // Storage::disk('public')->putFileAs('file', $file, $filename);
 
                 $document = Document::create([
                     'id' => $fileId,
@@ -73,8 +74,7 @@ class DocumentController extends Controller
                     'server_file_id' => $document->id,
                     'server_file_path' => $document->path,
                     'server_file_name' => $document->filename,
-                    // 'server_file_url' => url("storage/file/{$filename}"),
-                    'server_file_url'       => asset("storage/{$document->path}"),
+                    'server_file_url'       => url("storage/{$document->path}"),
                     'server_file_mime_type' => $document->mime_type,
                     'server_file_size' => $this->formatFileSize($document->size),
                 ];
