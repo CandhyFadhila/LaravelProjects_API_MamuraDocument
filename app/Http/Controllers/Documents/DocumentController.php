@@ -142,7 +142,7 @@ class DocumentController extends Controller
 
     private function formatFileSize($bytes)
     {
-        $sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+        $sizes = ['b', 'kB', 'mB', 'gB', 'tB'];
         $factor = floor(log($bytes, 1024));
 
         return sprintf("%.2f", $bytes / pow(1024, $factor)) . ' ' . $sizes[$factor];
